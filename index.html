@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Okey 101 Yaz Boz (muhlissoysal)</title>
+    <title>Okey 101 Yaz Boz (Final)</title>
     <style>
         :root {
             --bg-color: #131314;
@@ -14,9 +14,9 @@
             --border-color: #3c4043;
             --input-bg: #2d2e30;
             --disabled-bg: #202124;
-            --biter-active-color: #e57373; /* Kırmızımsı */
-            --okey-biter-active-color: #4CAF50; /* Yeşil */
-            --kafa-active-color: #ffc107;  /* Altın Sarısı */
+            --biter-active-color: #e57373;
+            --okey-biter-active-color: #4CAF50;
+            --kafa-active-color: #ffc107;
             --remove-btn-color: #888;
         }
 
@@ -449,21 +449,36 @@
         }
 
         function addAllEventListeners() {
-            const container = document.querySelector('.container');
-            container.addEventListener('input', e => {
-                if (e.target.matches('.score-input, .penalty-input')) calculateTotals();
-            });
-            container.addEventListener('click', e => {
-                if(e.target.matches('.finish-button, .okey-biter-button, .kafa-button')) handleEndGameClick(e);
-                if(e.target.matches('#toggleScoresBtn')) handleToggleScores();
-                if(e.target.matches('.add-penalty-btn, .remove-penalty-btn')) handlePenaltyAction(e);
-            });
+            // Tüm olayları en dıştaki container yerine doğrudan document'e atayarak
+            // mobil uyumluluk sorunlarını gideriyoruz.
+            document.removeEventListener('input', handleInput);
+            document.removeEventListener('click', handleClick);
+            
+            document.addEventListener('input', handleInput);
+            document.addEventListener('click', handleClick);
+        }
+
+        function handleInput(e) {
+            if (e.target.matches('.score-input, .penalty-input')) {
+                calculateTotals();
+            }
+        }
+
+        function handleClick(e) {
+            if(e.target.matches('.finish-button, .okey-biter-button, .kafa-button')) handleEndGameClick(e);
+            if(e.target.matches('#toggleScoresBtn')) handleToggleScores();
+            if(e.target.matches('.add-penalty-btn, .remove-penalty-btn')) handlePenaltyAction(e);
+            if(e.target.matches('#startGameBtn')) generateTable(true);
         }
         
-        elements.startGameBtn.addEventListener('click', () => generateTable(true));
-        
+        // Başlangıç event listener'ları
+        elements.gameModeSelect.addEventListener('change', () => generateTable(true));
+        elements.handCountSelect.addEventListener('change', () => generateTable(true));
+
         document.addEventListener('DOMContentLoaded', () => {
-            if (!loadGameData()) generateTable(false);
+            if (!loadGameData()) {
+                generateTable(false);
+            }
         });
     </script>
 </body>
