@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Okey 101 Yaz Boz (Final)</title>
+    <title>Okey 101 Yaz Boz (muhlissoysal)</title>
     <style>
         :root {
             --bg-color: #131314;
@@ -14,8 +14,9 @@
             --border-color: #3c4043;
             --input-bg: #2d2e30;
             --disabled-bg: #202124;
-            --biter-active-color: #e57373;
-            --kafa-active-color: #ffc107;
+            --biter-active-color: #e57373; /* Kırmızımsı */
+            --okey-biter-active-color: #4CAF50; /* Yeşil */
+            --kafa-active-color: #ffc107;  /* Altın Sarısı */
             --remove-btn-color: #888;
         }
 
@@ -97,21 +98,22 @@
         tbody tr:nth-child(even) { background-color: rgba(0,0,0,0.15); }
         #scoreTable tbody td:first-child { font-weight: bold; color: var(--primary-color); padding: 12px;}
 
-        .score-cell-wrapper { display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .score-cell-wrapper { display: flex; align-items: center; justify-content: center; gap: 5px; flex-wrap: wrap;}
         
         input[type="number"] {
             width: 100%; padding: 8px; background-color: var(--input-bg); border: 1px solid var(--border-color);
             color: var(--text-color); border-radius: 4px; text-align: center; font-size: 1rem; -moz-appearance: textfield;
             transition: background-color 0.2s;
         }
-        #scoreTable input[type="number"] { width: 40%; min-width: 40px; }
+        #scoreTable .score-cell-wrapper input[type="number"] { width: 40px; flex-shrink: 0;}
         input[type="number"]:disabled { background-color: var(--disabled-bg); color: #fff; font-weight: bold; cursor: not-allowed; }
         
-        .finish-button, .kafa-button {
+        .finish-button, .kafa-button, .okey-biter-button {
             padding: 6px 8px; font-size: 0.8em; font-weight: bold; border: 1px solid var(--border-color);
             border-radius: 4px; background-color: var(--input-bg); color: var(--text-color); flex-shrink: 0;
         }
         .finish-button.is-finisher { background-color: var(--biter-active-color); color: var(--bg-color); border-color: var(--biter-active-color); }
+        .okey-biter-button.is-okey-biter { background-color: var(--okey-biter-active-color); color: var(--bg-color); border-color: var(--okey-biter-active-color); }
         .kafa-button.is-kafa { background-color: var(--kafa-active-color); color: var(--bg-color); border-color: var(--kafa-active-color); }
 
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -142,7 +144,7 @@
             #scoreTable tfoot td:first-child { justify-content: center;}
             #scoreTable tfoot td:first-child:before { content: none; }
             .score-cell-wrapper { flex-grow: 1; justify-content: flex-end; }
-            #scoreTable input[type="number"] { width: 60px; }
+            #scoreTable .score-cell-wrapper input[type="number"] { width: 60px; }
             tfoot .total-score { font-size: 1.2em; }
         }
     </style>
@@ -200,15 +202,10 @@
         // --- DATA PERSISTENCE ---
         function saveGameData() {
             const data = {
-                settings: {
-                    mode: elements.gameModeSelect.value,
-                    hands: elements.handCountSelect.value
-                },
+                settings: { mode: elements.gameModeSelect.value, hands: elements.handCountSelect.value },
                 penalties: [],
                 scores: {},
-                ui: {
-                    scoresHidden: areScoresHidden
-                }
+                ui: { scoresHidden: areScoresHidden }
             };
 
             for (let i = 0; i < playerCount; i++) {
@@ -216,12 +213,14 @@
                 data.penalties.push(playerPenalties);
             }
 
-            document.querySelectorAll('.score-input, .finish-button.is-finisher, .kafa-button.is-kafa').forEach(el => {
+            document.querySelectorAll('.score-input, .finish-button.is-finisher, .okey-biter-button.is-okey-biter, .kafa-button.is-kafa').forEach(el => {
                 const key = `${el.dataset.hand}-${el.dataset.player}`;
                 if (el.classList.contains('score-input')) {
                     if (el.value !== "") data.scores[key] = { value: el.value };
                 } else {
-                    const type = el.classList.contains('is-finisher') ? 'biter' : 'kafa';
+                    let type = 'biter';
+                    if (el.classList.contains('is-okey-biter')) type = 'okey-biter';
+                    else if (el.classList.contains('is-kafa')) type = 'kafa';
                     data.scores[key] = { type };
                 }
             });
@@ -260,7 +259,10 @@
                 const scoreData = data.scores[key];
                 
                 if (scoreData.type) {
-                    const buttonClass = scoreData.type === 'biter' ? 'finish-button' : 'kafa-button';
+                    let buttonClass = 'finish-button';
+                    if (scoreData.type === 'okey-biter') buttonClass = 'okey-biter-button';
+                    else if (scoreData.type === 'kafa') buttonClass = 'kafa-button';
+                    
                     const button = document.querySelector(`.${buttonClass}[data-hand="${hand}"][data-player="${player}"]`);
                     if(button) button.click();
                 } else {
@@ -276,32 +278,43 @@
         function handleToggleScores() {
             areScoresHidden = !areScoresHidden;
             updateTotalScoreDisplay();
-            saveGameData(); 
+            saveGameData();
         }
 
         function handleEndGameClick(event) {
             const clickedButton = event.target;
             const hand = clickedButton.dataset.hand;
             const finisherIndex = parseInt(clickedButton.dataset.player);
+            
+            const isBiterClick = clickedButton.classList.contains('finish-button');
+            const isOkeyBiterClick = clickedButton.classList.contains('okey-biter-button');
             const isKafaClick = clickedButton.classList.contains('kafa-button');
-            const wasActive = clickedButton.classList.contains(isKafaClick ? 'is-kafa' : 'is-finisher');
 
-            const allHandButtons = document.querySelectorAll(`.finish-button[data-hand="${hand}"], .kafa-button[data-hand="${hand}"]`);
+            let activeClass = '';
+            if (isBiterClick) activeClass = 'is-finisher';
+            else if (isOkeyBiterClick) activeClass = 'is-okey-biter';
+            else if (isKafaClick) activeClass = 'is-kafa';
+            
+            const wasActive = clickedButton.classList.contains(activeClass);
+
+            const allHandButtons = document.querySelectorAll(`.finish-button[data-hand="${hand}"], .okey-biter-button[data-hand="${hand}"], .kafa-button[data-hand="${hand}"]`);
             const allHandInputs = document.querySelectorAll(`.score-input[data-hand="${hand}"]`);
 
-            allHandButtons.forEach(button => button.classList.remove('is-finisher', 'is-kafa'));
+            allHandButtons.forEach(button => button.classList.remove('is-finisher', 'is-okey-biter', 'is-kafa'));
             allHandInputs.forEach(input => {
                 input.value = '';
                 input.disabled = false;
             });
 
             if (!wasActive) {
-                clickedButton.classList.add(isKafaClick ? 'is-kafa' : 'is-finisher');
+                clickedButton.classList.add(activeClass);
                 const gameMode = elements.gameModeSelect.value;
                 
                 allHandInputs.forEach((input, playerIndex) => {
                     if (playerIndex === finisherIndex) {
-                        input.value = isKafaClick ? -200 : -100;
+                        if(isBiterClick) input.value = -100;
+                        else if(isOkeyBiterClick) input.value = -200;
+                        else if(isKafaClick) input.value = -200;
                         input.disabled = true;
                     } else if (isKafaClick) {
                         input.value = (gameMode === 'paired') ? 800 : 400;
@@ -367,6 +380,7 @@
                             <div class="score-cell-wrapper">
                                 <input type="number" class="score-input" data-player="${j}" data-hand="${i}">
                                 <button class="finish-button" data-player="${j}" data-hand="${i}" title="${playerNames[j]} Bitti">BİTER</button>
+                                <button class="okey-biter-button" data-player="${j}" data-hand="${i}" title="${playerNames[j]} Okey Atarak Bitti">OKEY BİTER</button>
                                 <button class="kafa-button" data-player="${j}" data-hand="${i}" title="${playerNames[j]} Kafa Attı">KAFA</button>
                             </div>
                         </td>`;
@@ -400,9 +414,7 @@
                 document.querySelectorAll(`.penalty-input[data-player="${i}"]`).forEach(input => total += (parseInt(input.value) || 0) * 10);
                 
                 const totalCell = document.getElementById(`total-${i}`);
-                if (totalCell) {
-                    totalCell.dataset.realValue = total;
-                }
+                if (totalCell) totalCell.dataset.realValue = total;
             }
             updateTotalScoreDisplay();
             saveGameData();
@@ -410,9 +422,7 @@
 
         function updateTotalScoreDisplay() {
             const toggleBtn = document.getElementById('toggleScoresBtn');
-            if (toggleBtn) {
-                toggleBtn.textContent = areScoresHidden ? 'Göster' : 'Gizle';
-            }
+            if (toggleBtn) toggleBtn.textContent = areScoresHidden ? 'Göster' : 'Gizle';
 
             for(let i=0; i<playerCount; i++) {
                 const totalCell = document.getElementById(`total-${i}`);
@@ -441,13 +451,11 @@
         function addAllEventListeners() {
             const container = document.querySelector('.container');
             container.addEventListener('input', e => {
-                if (e.target.matches('.score-input, .penalty-input')) {
-                    calculateTotals();
-                }
+                if (e.target.matches('.score-input, .penalty-input')) calculateTotals();
             });
             container.addEventListener('click', e => {
-                if(e.target.matches('.finish-button, .kafa-button')) handleEndGameClick(e);
-                if(e.target.matches('#toggleScoresBtn')) handleToggleScores(e);
+                if(e.target.matches('.finish-button, .okey-biter-button, .kafa-button')) handleEndGameClick(e);
+                if(e.target.matches('#toggleScoresBtn')) handleToggleScores();
                 if(e.target.matches('.add-penalty-btn, .remove-penalty-btn')) handlePenaltyAction(e);
             });
         }
@@ -455,9 +463,7 @@
         elements.startGameBtn.addEventListener('click', () => generateTable(true));
         
         document.addEventListener('DOMContentLoaded', () => {
-            if (!loadGameData()) {
-                generateTable(false);
-            }
+            if (!loadGameData()) generateTable(false);
         });
     </script>
 </body>
