@@ -76,27 +76,35 @@
 
         #startGameBtn { background-color: var(--primary-color); color: var(--bg-color); font-weight: bold; }
         #toggleScoresBtn { padding: 4px 10px; font-size: 0.75em; }
+        #addRoundBtn { width: 100%; margin-top: 15px; background-color: var(--input-bg); border-style: dashed;}
         
         #penaltySection { display: flex; gap: 15px; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
         .player-penalty-area { flex: 1; min-width: 200px; padding: 15px; background-color: rgba(0,0,0,0.2); border-radius: 8px; }
-        .penalty-list { display: flex; flex-direction: column; gap: 8px; }
-        .penalty-row { display: flex; gap: 8px; align-items: center; }
-        
-        .add-penalty-btn, .remove-penalty-btn {
-            padding: 8px 12px; font-size: 0.8em; font-weight: bold; flex-shrink: 0;
-            border-radius: 4px;
+        .penalty-tags-container { display: flex; flex-wrap: wrap; gap: 6px; min-height: 28px; margin-bottom: 10px; justify-content: center; }
+        .penalty-tag {
+            display: inline-flex; align-items: center; background-color: var(--secondary-color);
+            color: var(--bg-color); padding: 2px 8px; border-radius: 12px;
+            font-size: 0.9em; font-weight: bold;
         }
-        .add-penalty-btn { background-color: var(--secondary-color); color: var(--bg-color); border-color: var(--secondary-color); }
-        .remove-penalty-btn { background-color: var(--remove-btn-color); color: var(--bg-color); border-color: var(--remove-btn-color); }
+        .remove-penalty-tag {
+            background: none; border: none; color: var(--bg-color); margin-left: 5px;
+            cursor: pointer; font-size: 1.4em; line-height: 1; padding: 0 2px;
+        }
+        .remove-penalty-tag:hover { opacity: 0.7; }
+        .penalty-input-area { display: flex; gap: 8px; margin-top: 10px; }
+        .add-penalty-btn { padding: 8px 12px; font-size: 0.8em; font-weight: bold; flex-shrink: 0; background-color: var(--secondary-color); color: var(--bg-color); border-color: var(--secondary-color); }
+        .penalty-total { text-align: center; font-size: 0.9em; color: var(--text-color); opacity: 0.8; padding-top: 8px; border-top: 1px solid var(--border-color); margin-top: 8px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; }
 
         thead th { background-color: var(--input-bg); font-weight: 600; }
         #scoreTable thead { background-color: var(--primary-color); color: var(--bg-color); }
+        
+        #scoreTable th:first-child, #scoreTable tbody td:first-child { width: 45px; }
 
         tbody tr:nth-child(even) { background-color: rgba(0,0,0,0.15); }
-        #scoreTable tbody td:first-child { font-weight: bold; color: var(--primary-color); padding: 12px;}
+        #scoreTable tbody td:first-child { font-weight: bold; color: var(--primary-color); padding: 12px 5px;}
 
         .score-cell-wrapper { display: flex; align-items: center; justify-content: center; gap: 5px; flex-wrap: wrap;}
         
@@ -122,10 +130,16 @@
         tfoot td { background-color: var(--input-bg); }
         tfoot .total-score { font-size: 1.5em; color: var(--primary-color); }
         tfoot .total-score.is-hidden { color: var(--remove-btn-color); letter-spacing: 2px;}
+        #score-difference-value { color: var(--kafa-active-color); font-size: 1.2em; }
+        #score-difference-value.is-hidden { color: var(--remove-btn-color); letter-spacing: 2px; }
         
         .hidden { display: none; }
 
         @media (max-width: 768px) {
+             #scoreTable th:first-child, #scoreTable tbody td:first-child { width: auto; }
+            #scoreTable tfoot td[colspan="2"] { width: auto%; display: block; }
+            #score-difference-row { display: block; }
+
             body { padding: 5px; }
             .container { padding: 15px; }
             h1 { font-size: 1.5rem; }
@@ -178,6 +192,7 @@
                 <tbody id="tableBody"></tbody>
                 <tfoot id="tableFooter"></tfoot>
             </table>
+            <div id="add-round-container"></div>
         </div>
     </div>
 
@@ -191,38 +206,28 @@
             mainScoreSection: document.getElementById('mainScoreSection'),
             tableHeader: document.getElementById('tableHeader'),
             tableBody: document.getElementById('tableBody'),
-            tableFooter: document.getElementById('tableFooter')
+            tableFooter: document.getElementById('tableFooter'),
+            addRoundContainer: document.getElementById('add-round-container'),
         };
 
         const STORAGE_KEY = 'okey101YazBozData';
         let playerCount = 2;
         let playerNames = ['Biz', 'Onlar'];
         let areScoresHidden = true;
+        let currentHandCount = 7;
 
-        // --- DATA PERSISTENCE ---
         function saveGameData() {
             const data = {
-                settings: { mode: elements.gameModeSelect.value, hands: elements.handCountSelect.value },
-                penalties: [],
-                scores: {},
-                ui: { scoresHidden: areScoresHidden }
+                settings: { mode: elements.gameModeSelect.value, hands: elements.handCountSelect.value, currentHands: currentHandCount },
+                penalties: [], scores: {}, ui: { scoresHidden: areScoresHidden }
             };
-
             for (let i = 0; i < playerCount; i++) {
-                const playerPenalties = Array.from(document.querySelectorAll(`.penalty-input[data-player="${i}"]`)).map(input => input.value);
-                data.penalties.push(playerPenalties);
+                data.penalties.push(Array.from(document.querySelectorAll(`#penalty-tags-container-${i} .penalty-tag`)).map(tag => tag.dataset.value));
             }
-
             document.querySelectorAll('.score-input, .finish-button.is-finisher, .okey-biter-button.is-okey-biter, .kafa-button.is-kafa').forEach(el => {
                 const key = `${el.dataset.hand}-${el.dataset.player}`;
-                if (el.classList.contains('score-input')) {
-                    if (el.value !== "") data.scores[key] = { value: el.value };
-                } else {
-                    let type = 'biter';
-                    if (el.classList.contains('is-okey-biter')) type = 'okey-biter';
-                    else if (el.classList.contains('is-kafa')) type = 'kafa';
-                    data.scores[key] = { type };
-                }
+                if (el.classList.contains('score-input')) { if (el.value !== "") data.scores[key] = { value: el.value }; } 
+                else { let type = 'biter'; if (el.classList.contains('is-okey-biter')) type = 'okey-biter'; else if (el.classList.contains('is-kafa')) type = 'kafa'; data.scores[key] = { type }; }
             });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
@@ -230,128 +235,81 @@
         function loadGameData() {
             const savedData = localStorage.getItem(STORAGE_KEY);
             if (!savedData) return false;
-
             const data = JSON.parse(savedData);
-            
             elements.gameModeSelect.value = data.settings.mode;
             elements.handCountSelect.value = data.settings.hands;
             areScoresHidden = data.ui?.scoresHidden ?? true;
-            
+            currentHandCount = data.settings.currentHands || parseInt(data.settings.hands);
             generateTable(false);
-
             data.penalties.forEach((playerPenalties, playerIndex) => {
-                const penaltyList = document.getElementById(`penalty-list-${playerIndex}`);
-                if (!penaltyList) return;
-                penaltyList.innerHTML = '';
-                if(playerPenalties.length === 0 || (playerPenalties.length === 1 && playerPenalties[0] === '')) {
-                     penaltyList.insertAdjacentHTML('beforeend', createPenaltyRowHTML(playerIndex));
-                } else {
-                    playerPenalties.forEach((value, index) => {
-                        const isLast = index === playerPenalties.length - 1;
-                        const rowHTML = createPenaltyRowHTML(playerIndex, value, isLast ? 'EKLE' : 'SİL');
-                        penaltyList.insertAdjacentHTML('beforeend', rowHTML);
-                    });
-                }
+                const tagsContainer = document.getElementById(`penalty-tags-container-${playerIndex}`);
+                if (!tagsContainer) return;
+                playerPenalties.forEach(value => tagsContainer.insertAdjacentHTML('beforeend', createPenaltyTagHTML(value)));
             });
-
             Object.keys(data.scores).forEach(key => {
-                const [hand, player] = key.split('-');
-                const scoreData = data.scores[key];
-                
+                const [hand, player] = key.split('-'); const scoreData = data.scores[key];
                 if (scoreData.type) {
-                    let buttonClass = 'finish-button';
-                    if (scoreData.type === 'okey-biter') buttonClass = 'okey-biter-button';
-                    else if (scoreData.type === 'kafa') buttonClass = 'kafa-button';
-                    
-                    const button = document.querySelector(`.${buttonClass}[data-hand="${hand}"][data-player="${player}"]`);
-                    if(button) button.click();
-                } else {
-                    const input = document.querySelector(`.score-input[data-hand="${hand}"][data-player="${player}"]`);
-                    if(input) input.value = scoreData.value;
-                }
+                    let buttonClass = 'finish-button'; if (scoreData.type === 'okey-biter') buttonClass = 'okey-biter-button'; else if (scoreData.type === 'kafa') buttonClass = 'kafa-button';
+                    const button = document.querySelector(`.${buttonClass}[data-hand="${hand}"][data-player="${player}"]`); if (button) button.click();
+                } else { const input = document.querySelector(`.score-input[data-hand="${hand}"][data-player="${player}"]`); if (input) input.value = scoreData.value; }
             });
             updateTotalScoreDisplay();
             return true;
         }
 
-        // --- EVENT HANDLERS ---
-        function handleToggleScores() {
-            areScoresHidden = !areScoresHidden;
-            updateTotalScoreDisplay();
-            saveGameData();
-        }
+        function handleToggleScores() { areScoresHidden = !areScoresHidden; updateTotalScoreDisplay(); saveGameData(); }
 
         function handleEndGameClick(event) {
-            const clickedButton = event.target;
-            const hand = clickedButton.dataset.hand;
-            const finisherIndex = parseInt(clickedButton.dataset.player);
-            
-            const isBiterClick = clickedButton.classList.contains('finish-button');
-            const isOkeyBiterClick = clickedButton.classList.contains('okey-biter-button');
-            const isKafaClick = clickedButton.classList.contains('kafa-button');
-
-            let activeClass = '';
-            if (isBiterClick) activeClass = 'is-finisher';
-            else if (isOkeyBiterClick) activeClass = 'is-okey-biter';
-            else if (isKafaClick) activeClass = 'is-kafa';
-            
+            const clickedButton = event.target; const hand = clickedButton.dataset.hand; const finisherIndex = parseInt(clickedButton.dataset.player);
+            const isBiterClick = clickedButton.classList.contains('finish-button'); const isOkeyBiterClick = clickedButton.classList.contains('okey-biter-button'); const isKafaClick = clickedButton.classList.contains('kafa-button');
+            let activeClass = ''; if (isBiterClick) activeClass = 'is-finisher'; else if (isOkeyBiterClick) activeClass = 'is-okey-biter'; else if (isKafaClick) activeClass = 'is-kafa';
             const wasActive = clickedButton.classList.contains(activeClass);
-
             const allHandButtons = document.querySelectorAll(`.finish-button[data-hand="${hand}"], .okey-biter-button[data-hand="${hand}"], .kafa-button[data-hand="${hand}"]`);
             const allHandInputs = document.querySelectorAll(`.score-input[data-hand="${hand}"]`);
-
             allHandButtons.forEach(button => button.classList.remove('is-finisher', 'is-okey-biter', 'is-kafa'));
-            allHandInputs.forEach(input => {
-                input.value = '';
-                input.disabled = false;
-            });
-
+            allHandInputs.forEach(input => { input.value = ''; input.disabled = false; });
             if (!wasActive) {
-                clickedButton.classList.add(activeClass);
-                const gameMode = elements.gameModeSelect.value;
-                
+                clickedButton.classList.add(activeClass); const gameMode = elements.gameModeSelect.value;
                 allHandInputs.forEach((input, playerIndex) => {
-                    if (playerIndex === finisherIndex) {
-                        if(isBiterClick) input.value = -100;
-                        else if(isOkeyBiterClick) input.value = -200;
-                        else if(isKafaClick) input.value = -200;
-                        input.disabled = true;
-                    } else if (isKafaClick) {
-                        input.value = (gameMode === 'paired') ? 800 : 400;
-                        input.disabled = true;
-                    }
+                    if (playerIndex === finisherIndex) { if(isBiterClick) input.value = -100; else if(isOkeyBiterClick) input.value = -200; else if(isKafaClick) input.value = -200; input.disabled = true; } 
+                    else if (isKafaClick) { input.value = (gameMode === 'paired') ? 800 : 400; input.disabled = true; }
                 });
             }
             calculateTotals();
         }
 
         function handlePenaltyAction(event) {
-            const button = event.target;
-            if (button.matches('.add-penalty-btn')) {
-                const playerIndex = button.dataset.player;
-                const penaltyList = document.getElementById(`penalty-list-${playerIndex}`);
-                button.textContent = 'SİL';
-                button.classList.remove('add-penalty-btn');
-                button.classList.add('remove-penalty-btn');
-                const newRow = createPenaltyRowHTML(playerIndex);
-                penaltyList.insertAdjacentHTML('beforeend', newRow);
-                calculateTotals();
-            } else if (button.matches('.remove-penalty-btn')) {
-                button.closest('.penalty-row').remove();
-                calculateTotals();
-            }
+            const el = event.target;
+            if (el.matches('.add-penalty-btn')) {
+                const playerIndex = el.dataset.player; const input = document.querySelector(`.new-penalty-input[data-player="${playerIndex}"]`);
+                if (!input || !input.value) return; const tagsContainer = document.getElementById(`penalty-tags-container-${playerIndex}`);
+                tagsContainer.insertAdjacentHTML('beforeend', createPenaltyTagHTML(input.value));
+                input.value = ''; input.focus(); calculateTotals();
+            } 
+            else if (el.matches('.remove-penalty-tag')) { el.closest('.penalty-tag').remove(); calculateTotals(); }
         }
 
-        // --- CORE FUNCTIONS ---
+        function handlePenaltyEnter(event) {
+            if (event.key !== 'Enter' || !event.target.matches('.new-penalty-input')) { return; }
+            event.preventDefault(); const addButton = event.target.nextElementSibling;
+            if (addButton && addButton.matches('.add-penalty-btn')) { addButton.click(); }
+        }
+
+        function handleAddRound() {
+            currentHandCount++;
+            const newRowHTML = createHandRowHTML(currentHandCount, playerNames);
+            elements.tableBody.insertAdjacentHTML('beforeend', newRowHTML);
+            calculateTotals();
+        }
+
         function generateTable(resetData = true) {
             if (resetData) {
                 localStorage.removeItem(STORAGE_KEY);
                 areScoresHidden = true;
+                currentHandCount = parseInt(elements.handCountSelect.value);
             }
             
             const gameMode = elements.gameModeSelect.value;
-            const handCount = parseInt(elements.handCountSelect.value);
-
             playerCount = (gameMode === 'paired') ? 2 : 4;
             playerNames = (gameMode === 'paired') ? ['Biz', 'Onlar'] : ['Oyuncu 1', 'Oyuncu 2', 'Oyuncu 3', 'Oyuncu 4'];
             
@@ -363,44 +321,29 @@
                 elements.penaltySection.innerHTML += `
                     <div class="player-penalty-area">
                         <h3>${playerNames[i]}</h3>
-                        <div class="penalty-list" id="penalty-list-${i}">${createPenaltyRowHTML(i)}</div>
+                        <div class="penalty-tags-container" id="penalty-tags-container-${i}"></div>
+                        <div class="penalty-total">Ceza Toplamı: <span id="penalty-total-${i}">0</span></div>
+                        <div class="penalty-input-area">
+                            <input type="number" class="new-penalty-input" data-player="${i}" placeholder="Ceza Puanı">
+                            <button class="add-penalty-btn" data-player="${i}">EKLE</button>
+                        </div>
                     </div>`;
             }
+            
+            elements.addRoundContainer.innerHTML = `<button id="addRoundBtn">+ Uzatma Eli Ekle</button>`;
 
             let playerHeaderHTML = '';
             playerNames.forEach(name => { playerHeaderHTML += `<th>${name}</th>`; });
             elements.tableHeader.innerHTML = `<tr><th>El</th>${playerHeaderHTML}</tr>`;
-
             elements.tableBody.innerHTML = '';
-            for (let i = 1; i <= handCount; i++) {
-                let rowHTML = `<tr><td data-label="El">${i}</td>`;
-                for (let j = 0; j < playerCount; j++) {
-                    rowHTML += `
-                        <td data-label="${playerNames[j]}">
-                            <div class="score-cell-wrapper">
-                                <input type="number" class="score-input" data-player="${j}" data-hand="${i}">
-                                <button class="finish-button" data-player="${j}" data-hand="${i}" title="${playerNames[j]} Bitti">BİTER</button>
-                                <button class="okey-biter-button" data-player="${j}" data-hand="${i}" title="${playerNames[j]} Okey Atarak Bitti">OKEY BİTER</button>
-                                <button class="kafa-button" data-player="${j}" data-hand="${i}" title="${playerNames[j]} Kafa Attı">KAFA</button>
-                            </div>
-                        </td>`;
-                }
-                rowHTML += `</tr>`;
-                elements.tableBody.innerHTML += rowHTML;
+            for (let i = 1; i <= currentHandCount; i++) {
+                elements.tableBody.innerHTML += createHandRowHTML(i, playerNames);
             }
             
-            let footerHTML = `
-                <tr>
-                    <td data-label="Sonuç">
-                        <div class="total-cell">
-                           <span>TOPLAM</span>
-                           <button id="toggleScoresBtn" title="Skorları Göster/Gizle"></button>
-                        </div>
-                    </td>`;
-            for (let j = 0; j < playerCount; j++) {
-                footerHTML += `<td data-label="${playerNames[j]}" class="total-score" id="total-${j}" data-real-value="0"></td>`;
-            }
+            let footerHTML = `<tr><td data-label="Sonuç"><div class="total-cell"><span>TOPLAM</span><button id="toggleScoresBtn" title="Skorları Göster/Gizle"></button></div></td>`;
+            for (let j = 0; j < playerCount; j++) { footerHTML += `<td data-label="${playerNames[j]}" class="total-score" id="total-${j}" data-real-value="0"></td>`; }
             footerHTML += '</tr>';
+            if (gameMode === 'paired') { footerHTML += `<tr id="score-difference-row"><td data-label="Sonuç">FARK</td><td colspan="2" id="score-difference-value">0</td></tr>`; }
             elements.tableFooter.innerHTML = footerHTML;
 
             addAllEventListeners();
@@ -410,76 +353,88 @@
         function calculateTotals() {
             for (let i = 0; i < playerCount; i++) {
                 let total = 0;
+                let penaltySubtotal = 0;
                 document.querySelectorAll(`.score-input[data-player="${i}"]`).forEach(input => total += parseInt(input.value) || 0);
-                document.querySelectorAll(`.penalty-input[data-player="${i}"]`).forEach(input => total += (parseInt(input.value) || 0) * 10);
-                
+                document.querySelectorAll(`#penalty-tags-container-${i} .penalty-tag`).forEach(tag => penaltySubtotal += parseInt(tag.dataset.value) || 0);
+                const penaltyTotalEl = document.getElementById(`penalty-total-${i}`);
+                if (penaltyTotalEl) penaltyTotalEl.textContent = penaltySubtotal * 10;
+                total += penaltySubtotal * 10;
                 const totalCell = document.getElementById(`total-${i}`);
                 if (totalCell) totalCell.dataset.realValue = total;
             }
             updateTotalScoreDisplay();
             saveGameData();
         }
-
+        
         function updateTotalScoreDisplay() {
             const toggleBtn = document.getElementById('toggleScoresBtn');
             if (toggleBtn) toggleBtn.textContent = areScoresHidden ? 'Göster' : 'Gizle';
-
             for(let i=0; i<playerCount; i++) {
                 const totalCell = document.getElementById(`total-${i}`);
                 if (totalCell) {
-                    if (areScoresHidden) {
-                        totalCell.textContent = '****';
-                        totalCell.classList.add('is-hidden');
-                    } else {
-                        totalCell.textContent = totalCell.dataset.realValue;
-                        totalCell.classList.remove('is-hidden');
-                    }
+                    if (areScoresHidden) { totalCell.textContent = '****'; totalCell.classList.add('is-hidden'); } 
+                    else { totalCell.textContent = totalCell.dataset.realValue; totalCell.classList.remove('is-hidden'); }
                 }
             }
+            updateScoreDifference();
         }
 
-        // --- HELPER & SETUP FUNCTIONS ---
-        function createPenaltyRowHTML(playerIndex, value = '', buttonType = 'EKLE') {
-            const btnClass = buttonType === 'EKLE' ? 'add-penalty-btn' : 'remove-penalty-btn';
-            return `
-                <div class="penalty-row">
-                    <input type="number" class="penalty-input" data-player="${playerIndex}" value="${value}">
-                    <button class="${btnClass}" data-player="${playerIndex}">${buttonType}</button>
-                </div>`;
+        function updateScoreDifference() {
+            const diffEl = document.getElementById('score-difference-value');
+            if (!diffEl) return;
+            if (areScoresHidden) {
+                diffEl.textContent = '****';
+                diffEl.classList.add('is-hidden');
+                return;
+            }
+            diffEl.classList.remove('is-hidden');
+            const score1 = parseInt(document.getElementById('total-0').dataset.realValue) || 0;
+            const score2 = parseInt(document.getElementById('total-1').dataset.realValue) || 0;
+            diffEl.textContent = Math.abs(score1 - score2);
         }
+
+        function createHandRowHTML(handNumber, players) {
+            let rowHTML = `<tr><td data-label="El">${handNumber}</td>`;
+            for (let j = 0; j < players.length; j++) {
+                rowHTML += `<td data-label="${players[j]}"><div class="score-cell-wrapper">
+                                <input type="number" class="score-input" data-player="${j}" data-hand="${handNumber}">
+                                <button class="finish-button" data-player="${j}" data-hand="${handNumber}" title="${playerNames[j]} Bitti">✅</button>
+                                <button class="okey-biter-button" data-player="${j}" data-hand="${handNumber}" title="${playerNames[j]} Okey Atarak Bitti">🃏</button>
+                                <button class="kafa-button" data-player="${j}" data-hand="${handNumber}" title="${playerNames[j]} Kafa Attı">🤯</button>
+                            </div></td>`;
+            }
+            rowHTML += `</tr>`;
+            return rowHTML;
+        }
+
+        function createPenaltyTagHTML(value) { const cleanValue = parseInt(value) || 0; return `<span class="penalty-tag" data-value="${cleanValue}">${cleanValue}<button class="remove-penalty-tag" title="Cezayı Sil">&times;</button></span>`; }
 
         function addAllEventListeners() {
-            // Tüm olayları en dıştaki container yerine doğrudan document'e atayarak
-            // mobil uyumluluk sorunlarını gideriyoruz.
             document.removeEventListener('input', handleInput);
             document.removeEventListener('click', handleClick);
-            
+            document.removeEventListener('keydown', handlePenaltyEnter);
             document.addEventListener('input', handleInput);
             document.addEventListener('click', handleClick);
+            document.addEventListener('keydown', handlePenaltyEnter);
         }
 
-        function handleInput(e) {
-            if (e.target.matches('.score-input, .penalty-input')) {
-                calculateTotals();
-            }
-        }
-
+        function handleInput(e) { if (e.target.matches('.score-input, .new-penalty-input')) calculateTotals(); }
+        
         function handleClick(e) {
-            if(e.target.matches('.finish-button, .okey-biter-button, .kafa-button')) handleEndGameClick(e);
-            if(e.target.matches('#toggleScoresBtn')) handleToggleScores();
-            if(e.target.matches('.add-penalty-btn, .remove-penalty-btn')) handlePenaltyAction(e);
-            if(e.target.matches('#startGameBtn')) generateTable(true);
+            if (e.target.matches('.finish-button, .okey-biter-button, .kafa-button')) handleEndGameClick(e);
+            if (e.target.matches('#toggleScoresBtn')) handleToggleScores();
+            if (e.target.matches('.add-penalty-btn, .remove-penalty-tag')) handlePenaltyAction(e);
+            if (e.target.matches('#startGameBtn')) generateTable(true);
+            if (e.target.matches('#addRoundBtn')) handleAddRound();
         }
         
-        // Başlangıç event listener'ları
         elements.gameModeSelect.addEventListener('change', () => generateTable(true));
-        elements.handCountSelect.addEventListener('change', () => generateTable(true));
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!loadGameData()) {
-                generateTable(false);
-            }
+        elements.handCountSelect.addEventListener('change', () => {
+            currentHandCount = parseInt(elements.handCountSelect.value);
+            generateTable(true);
         });
+        
+        document.addEventListener('DOMContentLoaded', () => { if (!loadGameData()) generateTable(false); });
     </script>
 </body>
 </html>
