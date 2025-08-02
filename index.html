@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Okey 101 Yaz Boz (Final)</title>
+    <title>Okey 101 Yaz Boz</title>
     <style>
         :root {
             --bg-color: #131314;
@@ -36,7 +36,7 @@
             width: 100%;
             max-width: 1000px;
             background-color: var(--surface-color);
-            border-radius: 12px;
+            border-radius: 0px;
             padding: 25px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
         }
@@ -57,7 +57,7 @@
             margin-bottom: 20px;
             padding: 15px;
             background-color: rgba(0,0,0,0.2);
-            border-radius: 8px;
+            border-radius: 0px;
         }
 
         button, .settings select {
@@ -65,7 +65,7 @@
             color: var(--text-color);
             border: 1px solid var(--border-color);
             padding: 10px 15px;
-            border-radius: 6px;
+            border-radius: 0px;
             font-size: 1rem;
             cursor: pointer;
             transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
@@ -79,11 +79,11 @@
         #addRoundBtn { width: 100%; margin-top: 15px; background-color: var(--input-bg); border-style: dashed;}
         
         #penaltySection { display: flex; gap: 15px; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
-        .player-penalty-area { flex: 1; min-width: 200px; padding: 15px; background-color: rgba(0,0,0,0.2); border-radius: 8px; }
+        .player-penalty-area { flex: 1; min-width: 200px; padding: 15px; background-color: rgba(0,0,0,0.2); border-radius: 0px; }
         .penalty-tags-container { display: flex; flex-wrap: wrap; gap: 6px; min-height: 28px; margin-bottom: 10px; justify-content: center; }
         .penalty-tag {
             display: inline-flex; align-items: center; background-color: var(--secondary-color);
-            color: var(--bg-color); padding: 2px 8px; border-radius: 12px;
+            color: var(--bg-color); padding: 2px 8px; border-radius: 0px;
             font-size: 0.9em; font-weight: bold;
         }
         .remove-penalty-tag {
@@ -110,7 +110,7 @@
         
         input[type="number"] {
             width: 100%; padding: 8px; background-color: var(--input-bg); border: 1px solid var(--border-color);
-            color: var(--text-color); border-radius: 4px; text-align: center; font-size: 1rem; -moz-appearance: textfield;
+            color: var(--text-color); border-radius: 0px; text-align: center; font-size: 1rem; -moz-appearance: textfield;
             transition: background-color 0.2s;
         }
         #scoreTable .score-cell-wrapper input[type="number"] { width: 40px; flex-shrink: 0;}
@@ -118,7 +118,7 @@
         
         .finish-button, .kafa-button, .okey-biter-button {
             padding: 9px 6px; font-size: 0.8em; font-weight: bold; border: 1px solid var(--border-color);
-            border-radius: 4px; background-color: var(--input-bg); color: var(--text-color); flex-shrink: 0;
+            border-radius: 0px; background-color: var(--input-bg); color: var(--text-color); flex-shrink: 0;
         }
         .finish-button.is-finisher { background-color: var(--biter-active-color); color: var(--bg-color); border-color: var(--biter-active-color); }
         .okey-biter-button.is-okey-biter { background-color: var(--okey-biter-active-color); color: var(--bg-color); border-color: var(--okey-biter-active-color); }
@@ -137,23 +137,35 @@
 
         @media (max-width: 768px) {
              #scoreTable th:first-child, #scoreTable tbody td:first-child { width: auto; }
-            #scoreTable tfoot td[colspan="2"] { width: auto%; display: block; }
+            #scoreTable tfoot td[colspan="2"] { width: auto; display: block; }
             #score-difference-row { display: block; }
 
             body { padding: 5px; }
             .container { padding: 15px; }
             h1 { font-size: 1.5rem; }
             h2 { font-size: 1.2rem; }
-            .settings { flex-direction: column; align-items: stretch; gap: 10px; }
+
+            /* --- DÜZENLEME BURADA --- */
+            .settings {
+                gap: 10px;
+                /* flex-direction: column; SATIRI KALDIRILDI */
+                /* align-items: stretch; SATIRI KALDIRILDI */
+            }
+            .settings #startGameBtn {
+                flex-basis: 100%; /* Butonun tek başına bir satır kaplamasını sağlar */
+                margin-top: 10px; /* Üstündeki elemanlarla arasına boşluk koyar */
+            }
+            /* --- DÜZENLEME BİTTİ --- */
+
             #penaltySection { flex-direction: column; gap: 15px; }
             .player-penalty-area { min-width: 100%; }
 
             #scoreTable { border: 0; }
             #scoreTable thead { border: none; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
-            #scoreTable tr { display: block; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px; background-color: var(--surface-color) !important; }
+            #scoreTable tr { display: block; border: 1px solid var(--border-color); border-radius: 0px; margin-bottom: 15px; background-color: var(--surface-color) !important; }
             #scoreTable td { display: flex; justify-content: space-between; align-items: center; border: none; border-bottom: 1px solid var(--border-color); padding: 10px 15px; font-size: 1rem; text-align: right; }
             #scoreTable tr:last-child, #scoreTable td:last-child { border-bottom: 0; }
-            #scoreTable td:first-child { background-color: rgba(138, 180, 248, 0.1); border-radius: 8px 8px 0 0; justify-content: center; font-size: 1.2rem; padding: 12px; }
+            #scoreTable td:first-child { background-color: rgba(138, 180, 248, 0.1); border-radius: 0px 0px 0 0; justify-content: center; font-size: 1.2rem; padding: 12px; }
             #scoreTable td:before { content: attr(data-label); font-weight: bold; text-align: left; margin-right: 15px; color: var(--text-color); }
             #scoreTable tfoot td:first-child { justify-content: center;}
             #scoreTable tfoot td:first-child:before { content: none; }
@@ -197,6 +209,7 @@
     </div>
 
     <script>
+        // JavaScript bölümü öncekiyle tamamen aynı, herhangi bir değişiklik gerekmedi.
         const elements = {
             gameModeSelect: document.getElementById('gameMode'),
             handCountSelect: document.getElementById('handCount'),
@@ -280,12 +293,7 @@
 
         function handlePenaltyAction(event) {
             const el = event.target;
-            if (el.matches('.add-penalty-btn')) {
-                const playerIndex = el.dataset.player; const input = document.querySelector(`.new-penalty-input[data-player="${playerIndex}"]`);
-                if (!input || !input.value) return; const tagsContainer = document.getElementById(`penalty-tags-container-${playerIndex}`);
-                tagsContainer.insertAdjacentHTML('beforeend', createPenaltyTagHTML(input.value));
-                input.value = ''; input.focus(); calculateTotals();
-            } 
+            if (el.matches('.add-penalty-btn')) { const playerIndex = el.dataset.player; const input = document.querySelector(`.new-penalty-input[data-player="${playerIndex}"]`); if (!input || !input.value) return; const tagsContainer = document.getElementById(`penalty-tags-container-${playerIndex}`); tagsContainer.insertAdjacentHTML('beforeend', createPenaltyTagHTML(input.value)); input.value = ''; input.focus(); calculateTotals(); } 
             else if (el.matches('.remove-penalty-tag')) { el.closest('.penalty-tag').remove(); calculateTotals(); }
         }
 
