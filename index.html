@@ -79,7 +79,7 @@
         #addRoundBtn { width: 100%; margin-top: 15px; background-color: var(--input-bg); border-style: dashed;}
         
         #penaltySection { display: flex; gap: 15px; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
-        .player-penalty-area { flex: 1; min-width: 200px; padding: 15px; background-color: rgba(0,0,0,0.2); border-radius: 0px; }
+        .player-penalty-area { flex: 1; min-width: 200px; padding: 0px; background-color: rgba(0,0,0,0.2); border-radius: 0px; }
         .penalty-tags-container { display: flex; flex-wrap: wrap; gap: 6px; min-height: 28px; margin-bottom: 10px; justify-content: center; }
         .penalty-tag {
             display: inline-flex; align-items: center; background-color: var(--secondary-color);
@@ -104,7 +104,7 @@
         #scoreTable th:first-child, #scoreTable tbody td:first-child { width: 45px; }
 
         tbody tr:nth-child(even) { background-color: rgba(0,0,0,0.15); }
-        #scoreTable tbody td:first-child { font-weight: bold; color: var(--primary-color); padding: 12px 5px;}
+        #scoreTable tbody td:first-child { font-weight: bold; color: var(--primary-color); padding: 6px 6px;}
 
         .score-cell-wrapper { display: flex; align-items: center; justify-content: center; gap: 5px; flex-wrap: wrap;}
         
@@ -163,7 +163,7 @@
             #scoreTable { border: 0; }
             #scoreTable thead { border: none; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
             #scoreTable tr { display: block; border: 1px solid var(--border-color); border-radius: 0px; margin-bottom: 15px; background-color: var(--surface-color) !important; }
-            #scoreTable td { display: flex; justify-content: space-between; align-items: center; border: none; border-bottom: 1px solid var(--border-color); padding: 10px 15px; font-size: 1rem; text-align: right; }
+            #scoreTable td { display: flex; justify-content: space-between; align-items: center; border: none; border-bottom: 1px solid var(--border-color); padding: 8px 6px; font-size: 1rem; text-align: right; }
             #scoreTable tr:last-child, #scoreTable td:last-child { border-bottom: 0; }
             #scoreTable td:first-child { background-color: rgba(138, 180, 248, 0.1); border-radius: 0px 0px 0 0; justify-content: center; font-size: 1.2rem; padding: 12px; }
             #scoreTable td:before { content: attr(data-label); font-weight: bold; text-align: left; margin-right: 15px; color: var(--text-color); }
@@ -319,7 +319,7 @@
             
             const gameMode = elements.gameModeSelect.value;
             playerCount = (gameMode === 'paired') ? 2 : 4;
-            playerNames = (gameMode === 'paired') ? ['Biz', 'Onlar'] : ['Oyuncu 1', 'Oyuncu 2', 'Oyuncu 3', 'Oyuncu 4'];
+            playerNames = (gameMode === 'paired') ? ['A Takım', 'B Takım'] : ['Oyuncu 1', 'Oyuncu 2', 'Oyuncu 3', 'Oyuncu 4'];
             
             elements.penaltyTitle.classList.remove('hidden');
             elements.mainScoreSection.classList.remove('hidden');
@@ -380,7 +380,7 @@
             for(let i=0; i<playerCount; i++) {
                 const totalCell = document.getElementById(`total-${i}`);
                 if (totalCell) {
-                    if (areScoresHidden) { totalCell.textContent = '****'; totalCell.classList.add('is-hidden'); } 
+                    if (areScoresHidden) { totalCell.textContent = '***'; totalCell.classList.add('is-hidden'); } 
                     else { totalCell.textContent = totalCell.dataset.realValue; totalCell.classList.remove('is-hidden'); }
                 }
             }
@@ -391,7 +391,7 @@
             const diffEl = document.getElementById('score-difference-value');
             if (!diffEl) return;
             if (areScoresHidden) {
-                diffEl.textContent = '****';
+                diffEl.textContent = '***';
                 diffEl.classList.add('is-hidden');
                 return;
             }
