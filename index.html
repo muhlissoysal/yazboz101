@@ -79,15 +79,14 @@
         
         #penaltySection { 
             display: flex; 
-            gap: 8px; 
+            gap: 4px; 
             justify-content: center; 
             align-items: flex-start;
-            padding-left: 84px;
         }
         .player-penalty-area { 
             flex: 1; 
             padding: 8px; 
-            background-color: rgba(0,0,0,0.5); 
+            background-color: rgba(0,0,0,0.2); 
             border-radius: 8px; 
         }
         .penalty-tags-container { 
@@ -109,7 +108,7 @@
         }
         .penalty-input-area { display: flex; gap: 8px; }
         .add-penalty-btn { 
-            padding: 6px 12px; font-size: 1em; font-weight: bold; flex-shrink: 0; 
+            padding: 6px 12px; font-size: 1.2em; font-weight: bold; flex-shrink: 0; 
             background-color: var(--secondary-color); color: var(--bg-color); 
         }
         .penalty-total { 
@@ -214,7 +213,7 @@
                 <option value="11">11</option>
                 <option value="13">13</option>
             </select>
-            <button id="startGameBtn">Başlat / Sıfırla</button>
+            <button id="startGameBtn">Başlat</button>
         </div>
 
         <div id="penaltyTitle" class="hidden"></div>
@@ -344,14 +343,14 @@
             
             const gameMode = elements.gameModeSelect.value;
             playerCount = (gameMode === 'paired') ? 2 : 4;
-            playerNames = (gameMode === 'paired') ? ['A Takımı', 'B Takımı'] : ['A', 'B', 'C', '🟨'];
+            playerNames = (gameMode === 'paired') ? ['A Takımı', 'B Takımı'] : ['A', 'B', 'C', 'D'];
             
             elements.penaltyTitle.classList.remove('hidden');
             elements.mainScoreSection.classList.remove('hidden');
             
             elements.penaltySection.innerHTML = '';
             for (let i = 0; i < playerCount; i++) {
-                elements.penaltySection.innerHTML += `<div class="player-penalty-area"><h3>${playerNames[i]}</h3><div class="penalty-tags-container" id="penalty-tags-container-${i}"></div><div class="penalty-total">  <span id="penalty-total-${i}">0</span></div><div class="penalty-input-area"><input type="number" class="new-penalty-input" data-player="${i}" placeholder="Ceza Puanı"><button class="add-penalty-btn" data-player="${i}">+</button></div></div>`;
+                elements.penaltySection.innerHTML += `<div class="player-penalty-area"><h3>${playerNames[i]}</h3><div class="penalty-tags-container" id="penalty-tags-container-${i}"></div><div class="penalty-total">  <span id="penalty-total-${i}">0</span></div><div class="penalty-input-area"><input type="number" class="new-penalty-input" data-player="${i}" placeholder="Ceza"><button class="add-penalty-btn" data-player="${i}">+</button></div></div>`;
             }
             
             elements.addRoundContainer.innerHTML = `<button id="addRoundBtn">+ Uzatma Eli Ekle</button>`;
