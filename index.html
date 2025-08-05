@@ -8,12 +8,12 @@
         :root {
             --bg-color: #131314;
             --surface-color: #1e1e1e;
-            --primary-color: #8ab4f8;
-            --secondary-color: #c58af9;
+            --primary-color: #7A9CF0      ;
+            --secondary-color: #F0D27A;
             --text-color: #e8eaed;
             --border-color: #3c4043;
             --input-bg: #2d2e30;
-            --kafa-active-color: #ffc107;
+            --kafa-active-color: #F0D27A;
             --passive-text-color: #9aa0a6;
         }
 
@@ -43,13 +43,11 @@
 
         .settings {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             justify-content: center;
             align-items: center;
             gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: rgba(0,0,0,0.2);
+            margin-bottom: 12px;
             border-radius: 8px;
         }
 
@@ -71,7 +69,6 @@
             color: var(--bg-color); 
             font-weight: bold; 
             flex-basis: 100%; 
-            margin-top: 10px;
         }
         #addRoundBtn { 
             width: 100%; 
@@ -85,11 +82,12 @@
             gap: 8px; 
             justify-content: center; 
             align-items: flex-start;
+            padding-left: 84px;
         }
         .player-penalty-area { 
             flex: 1; 
             padding: 8px; 
-            background-color: rgba(0,0,0,0.2); 
+            background-color: rgba(0,0,0,0.5); 
             border-radius: 8px; 
         }
         .penalty-tags-container { 
@@ -111,11 +109,11 @@
         }
         .penalty-input-area { display: flex; gap: 8px; }
         .add-penalty-btn { 
-            padding: 6px 6px; font-size: 0.8em; font-weight: bold; flex-shrink: 0; 
+            padding: 6px 12px; font-size: 1em; font-weight: bold; flex-shrink: 0; 
             background-color: var(--secondary-color); color: var(--bg-color); 
         }
         .penalty-total { 
-            text-align: center; font-size: 0.7em; opacity: 0.7; 
+            text-align: center; font-size: 0.8em; opacity: 0.7; 
             padding-top: 4px; padding-bottom: 4px; border-top: 1px solid var(--border-color); margin-top: 8px; 
         }
 
@@ -135,11 +133,12 @@
             font-weight: 600; 
         }
         tbody tr:nth-child(even) { 
-            background-color: rgba(0,0,0,0.15); 
+            background-color: rgba(0,0,0,0.2); 
         }
         tbody td:first-child { 
             font-weight: bold; 
             color: var(--primary-color); 
+            width: 66px;
         }
         
         input[type="number"] {
@@ -202,28 +201,26 @@
 </head>
 <body>
     <div class="container">
-        <h1>101 Yaz Boz</h1>
         <div class="settings">
             <label for="gameMode">Mod:</label>
             <select id="gameMode">
                 <option value="paired" selected>Eşli</option>
-                <option value="solo">Herkes Tek</option>
+                <option value="solo">Tek</option>
             </select>
-            <label for="handCount">El Sayısı:</label>
+            <label for="handCount">El:</label>
             <select id="handCount">
                 <option value="7" selected>7</option>
                 <option value="9">9</option>
                 <option value="11">11</option>
                 <option value="13">13</option>
             </select>
-            <button id="startGameBtn">Oyunu Başlat / Sıfırla</button>
+            <button id="startGameBtn">Başlat / Sıfırla</button>
         </div>
 
-        <div id="penaltyTitle" class="hidden"><h2>Cezalar (Her biri x10 Puan)</h2></div>
+        <div id="penaltyTitle" class="hidden"></div>
         <div id="penaltySection"></div>
 
         <div id="mainScoreSection" class="hidden">
-            <h2>Puan Tablosu</h2>
             <table id="scoreTable">
                 <thead id="tableHeader"></thead>
                 <tbody id="tableBody"></tbody>
@@ -347,21 +344,21 @@
             
             const gameMode = elements.gameModeSelect.value;
             playerCount = (gameMode === 'paired') ? 2 : 4;
-            playerNames = (gameMode === 'paired') ? ['A Takımı', 'B Takımı'] : ['Oyuncu 1', 'Oyuncu 2', 'Oyuncu 3', 'Oyuncu 4'];
+            playerNames = (gameMode === 'paired') ? ['A Takımı', 'B Takımı'] : ['A', 'B', 'C', '🟨'];
             
             elements.penaltyTitle.classList.remove('hidden');
             elements.mainScoreSection.classList.remove('hidden');
             
             elements.penaltySection.innerHTML = '';
             for (let i = 0; i < playerCount; i++) {
-                elements.penaltySection.innerHTML += `<div class="player-penalty-area"><h3>${playerNames[i]}</h3><div class="penalty-tags-container" id="penalty-tags-container-${i}"></div><div class="penalty-total">  <span id="penalty-total-${i}">0</span></div><div class="penalty-input-area"><input type="number" class="new-penalty-input" data-player="${i}" placeholder="Ceza Puanı"><button class="add-penalty-btn" data-player="${i}">EKLE</button></div></div>`;
+                elements.penaltySection.innerHTML += `<div class="player-penalty-area"><h3>${playerNames[i]}</h3><div class="penalty-tags-container" id="penalty-tags-container-${i}"></div><div class="penalty-total">  <span id="penalty-total-${i}">0</span></div><div class="penalty-input-area"><input type="number" class="new-penalty-input" data-player="${i}" placeholder="Ceza Puanı"><button class="add-penalty-btn" data-player="${i}">+</button></div></div>`;
             }
             
             elements.addRoundContainer.innerHTML = `<button id="addRoundBtn">+ Uzatma Eli Ekle</button>`;
 
             let playerHeaderHTML = '';
             playerNames.forEach(name => { playerHeaderHTML += `<th>${name}</th>`; });
-            elements.tableHeader.innerHTML = `<tr><th>El</th>${playerHeaderHTML}</tr>`;
+            elements.tableHeader.innerHTML = `<tr><th></th>${playerHeaderHTML}</tr>`;
             
             elements.tableBody.innerHTML = '';
             for (let i = 1; i <= currentHandCount; i++) {
