@@ -61,7 +61,6 @@
             cursor: pointer;
             transition: opacity 0.2s;
             border-radius: 0px;
-            font-weight: 900;
         }
         
         button:hover { opacity: 0.9; }
@@ -88,7 +87,7 @@
         }
         #addRoundBtn { 
             width: 100%; 
-            margin-top: 15px; 
+            margin-top: 8px; 
             background-color: var(--input-bg); 
             border-style: dashed;
             border-radius: 0px
@@ -173,7 +172,7 @@
             border: 1px solid var(--border-color);
             color: var(--text-color); 
             text-align: center; 
-            font-size: 1.2rem; 
+            font-size: 1.1rem; 
             box-sizing: border-box;
             -moz-appearance: textfield;
         }
@@ -184,7 +183,7 @@
         tfoot { font-weight: bold; }
         tfoot td { background-color: var(--input-bg); }
         tfoot .total-score { 
-            font-size: 2em; 
+            font-size: 1.3em; 
             color: var(--primary-color); 
         }
         tfoot .total-score.is-hidden {
@@ -196,7 +195,7 @@
             color: var(--kafa-active-color);
         }
         #score-difference-value { 
-            font-size: 1.3em;
+            font-size: 1.1em;
             color: var(--kafa-active-color); 
         }
         /* YENİ: Önde olan takım göstergesi için stil */
@@ -390,7 +389,7 @@
             }
             
             // YENİ: Footer (alt toplam) bölümü Göster/Gizle butonuyla birlikte oluşturuluyor
-            let footerHTML = `<tr><td><div class="total-cell-header"><span>TOPLAM</span><button id="toggleScoresBtn" title="Skorları Göster/Gizle"></button></div></td>`;
+            let footerHTML = `<tr><td><div class="total-cell-header"><button id="toggleScoresBtn" title="Skorları Göster/Gizle"></button></div></td>`;
             for (let j = 0; j < playerCount; j++) { 
                 footerHTML += `<td class="total-score" id="total-${j}" data-real-value="0">0</td>`; 
             }
@@ -434,7 +433,7 @@
         // YENİ: Alt toplam ve fark görüntüsünü yöneten ana fonksiyon
         function updateTotalScoreDisplay() {
             const toggleBtn = document.getElementById('toggleScoresBtn');
-            if (toggleBtn) toggleBtn.textContent = areScoresHidden ? 'Göster' : 'Gizle';
+            if (toggleBtn) toggleBtn.textContent = areScoresHidden ? 'TOPLAM' : 'TOPLAM';
 
             for(let i=0; i<playerCount; i++) {
                 const totalCell = document.getElementById(`total-${i}`);
