@@ -11,7 +11,7 @@
             --primary-color: #7A9CF0      ;
             --secondary-color: #F0D27A;
             --text-color: #e8eaed;
-            --border-color: #3c4043;
+            --border-color: #313233;
             --input-bg: #2d2e30;
             --kafa-active-color: #F0D27A;
             --passive-text-color: #9aa0a6;
@@ -30,7 +30,6 @@
             max-width: 1000px;
             margin: 0 auto;
             background-color: var(--surface-color);
-            border-radius: 8px;
             padding: 10px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
             box-sizing: border-box;
@@ -46,9 +45,8 @@
             flex-wrap: nowrap;
             justify-content: center;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
             margin-bottom: 12px;
-            border-radius: 8px;
         }
 
         button, .settings select {
@@ -56,7 +54,6 @@
             color: var(--text-color);
             border: 1px solid var(--border-color);
             padding: 10px 15px;
-            border-radius: 5px;
             font-size: 1rem;
             cursor: pointer;
             transition: opacity 0.2s;
@@ -82,12 +79,13 @@
             gap: 4px; 
             justify-content: center; 
             align-items: flex-start;
+
         }
         .player-penalty-area { 
             flex: 1; 
             padding: 8px; 
             background-color: rgba(0,0,0,0.2); 
-            border-radius: 8px; 
+            border: 1px solid var(--border-color);
         }
         .penalty-tags-container { 
             display: flex; 
@@ -146,7 +144,6 @@
             background-color: var(--input-bg); 
             border: 1px solid var(--border-color);
             color: var(--text-color); 
-            border-radius: 4px; 
             text-align: center; 
             font-size: 1rem; 
             box-sizing: border-box;
@@ -201,17 +198,15 @@
 <body>
     <div class="container">
         <div class="settings">
-            <label for="gameMode">Mod:</label>
             <select id="gameMode">
                 <option value="paired" selected>Eşli</option>
                 <option value="solo">Tek</option>
             </select>
-            <label for="handCount">El:</label>
             <select id="handCount">
-                <option value="7" selected>7</option>
-                <option value="9">9</option>
-                <option value="11">11</option>
-                <option value="13">13</option>
+                <option value="7" selected>7 El</option>
+                <option value="9">9 El</option>
+                <option value="11">11 El</option>
+                <option value="13">13 El</option>
             </select>
             <button id="startGameBtn">Başlat</button>
         </div>
