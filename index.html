@@ -492,8 +492,9 @@
             generateTable(true);
         });
         
-        document.addEventListener('DOMContentLoaded', () => { 
-            loadGameData();
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!loadGameData()) 
+                generateTable(false);
         });
     </script>
 </body>
