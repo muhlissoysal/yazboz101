@@ -12,10 +12,10 @@
             --primary-color: #93beff;
             --secondary-color: #ff9393;
             --text-color: #ffffff;
-            --border-color: #ffffff15;
+            --border-color: #ffffff20;
             --input-bg: #ffffff00;
             --kafa-active-color: #F0D27A;
-            --passive-text-color: #ffffff55;
+            --passive-text-color: #ffffff75;
         }
 
         body {
@@ -39,9 +39,9 @@
         }
 
         h1, h2, h3 { text-align: center; font-weight: 500; }
-        h1 { color: var(--primary-color); margin-top: 0; margin-bottom: 20px; font-size: 1.8rem; }
+        h1 { color: var(--primary-color); margin-top: 0; margin-bottom: 20px; font-size: 3.8rem; }
         h2 { color: var(--secondary-color); margin-top: 25px; margin-bottom: 15px; font-size: 1.3rem;}
-        h3 { color: var(--passive-text-color); font-weight: normal; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; font-size: 1rem; }
+        h3 { color: var(--passive-text-color); font-weight: normal; margin-bottom: 2px; border-bottom: 0px solid var(--border-color); padding-bottom: 8px; font-size: 1rem; }
 
         .settings {
             display: flex;
@@ -56,7 +56,7 @@
         button, .settings select {
             background-color: var(--input-bg);
             color: var(--text-color);
-            border: 1px solid var(--border-color);
+            border: 0px solid var(--border-color);
             padding: 10px 15px;
             font-size: 0.8rem;
             cursor: pointer;
@@ -114,7 +114,7 @@
         .penalty-tags-container { 
             display: flex; 
             flex-wrap: wrap; 
-            gap: 8px; 
+            gap: 3px; 
             min-height: 24px; 
             margin-bottom: 10px; 
             justify-content: center; 
@@ -134,15 +134,11 @@
             padding: 6px 12px; font-size: 1.1em; font-weight: 900; flex-shrink: 0; 
             background-color: var(--secondary-color); color: var(--bg-color); 
         }
-        .penalty-total { 
-            text-align: center;
-            font-size: 0.8em; /* Biraz daha okunaklı olması için */
-            /* font-weight: bold;  Kalınlaştırarak dikkat çekici yapalım */
-            color: var(--text-color); /* Ceza rengini ekledik */
-            padding-top: 4px;
-            padding-bottom: 4px;
-            border-top: 1px solid var(--border-color);
-            margin-top: 8px; 
+        .penalty-display-header {
+            color: var(--secondary-color);
+            font-size: 0.9em;
+            font-weight: 400;
+            margin-left: 0px;
         }
 
         table { 
@@ -171,9 +167,10 @@
         /* Tablo içindeki skor giriş alanları için stil */
         .score-input {
             width: 100%; 
-            padding: 12px; 
+            padding: 6px; 
             background-color: var(--input-bg); 
-            border: 1px solid var(--border-color);
+            border: 0; /* Önceki çerçeveyi tamamen kaldır */
+            border-bottom: 0px solid var(--border-color); /* Sadece alta 2px'lik çizgi ekle */
             color: var(--text-color); 
             text-align: center; 
             font-size: 1.3rem; 
@@ -190,6 +187,7 @@
             padding: 4px; 
             background-color: var(--input-bg); 
             border: 1px solid var(--border-color);
+            /* border-bottom: 1px solid var(--border-color); Sadece alta 1px'lik çizgi ekle (border: 0 olacak)*/
             color: var(--text-color); 
             text-align: center; 
             font-size: 1rem; /* Daha küçük ve sade bir yazı boyutu */
@@ -405,7 +403,7 @@
             
             elements.penaltySection.innerHTML = '';
             for (let i = 0; i < playerCount; i++) {
-                elements.penaltySection.innerHTML += `<div class="player-penalty-area"><h3>${playerNames[i]}</h3><div class="penalty-tags-container" id="penalty-tags-container-${i}"></div><div class="penalty-total">  <span id="penalty-total-${i}">0</span></div><div class="penalty-input-area"><input type="number" class="new-penalty-input" data-player="${i}" placeholder="Ceza"><button class="add-penalty-btn" data-player="${i}">+</button></div></div>`;
+                elements.penaltySection.innerHTML += `<div class="player-penalty-area"><h3>${playerNames[i]} <span class="penalty-display-header" id="penalty-display-header-${i}"></span></h3><div class="penalty-tags-container" id="penalty-tags-container-${i}"></div><div class="penalty-input-area"><input type="number" class="new-penalty-input" data-player="${i}" placeholder="Ceza"><button class="add-penalty-btn" data-player="${i}">+</button></div></div>`;
             }
             
             elements.addRoundContainer.innerHTML = `<button id="addRoundBtn">+ UZATMA EKLE</button>`;
@@ -447,8 +445,16 @@
                 document.querySelectorAll(`.score-input[data-player="${i}"]`).forEach(input => total += parseInt(input.value) || 0);
                 document.querySelectorAll(`#penalty-tags-container-${i} .penalty-tag`).forEach(tag => penaltySubtotal += parseInt(tag.dataset.value) || 0);
                 
-                const penaltyTotalEl = document.getElementById(`penalty-total-${i}`);
-                if (penaltyTotalEl) penaltyTotalEl.textContent = penaltySubtotal * 10;
+                const totalPenaltyPoints = penaltySubtotal * 10;
+                const penaltyHeaderDisplayEl = document.getElementById(`penalty-display-header-${i}`);
+
+                if (penaltyHeaderDisplayEl) {
+                    if (totalPenaltyPoints > 0) {
+                        penaltyHeaderDisplayEl.textContent = `(${totalPenaltyPoints})`;
+                    } else {
+                        penaltyHeaderDisplayEl.textContent = ''; // Ceza 0 ise hiçbir şey gösterme
+                    }
+                }
                 total += penaltySubtotal * 10;
                 
                 const totalCell = document.getElementById(`total-${i}`);
