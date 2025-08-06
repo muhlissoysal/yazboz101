@@ -5,25 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Okey 101 Yaz Boz (Mobil)</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
         :root {
-            --bg-color: #000000;
+            --bg-color: #0e0e0e;
             --surface-color: #0e0e0e;
             --primary-color: #93beff;
             --secondary-color: #ff9393;
             --text-color: #e8eaed;
             --border-color: #242525;
-            --input-bg: #0c0c0c;
+            --input-bg: #00000000;
             --kafa-active-color: #F0D27A;
             --passive-text-color: #9aa0a6;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
             -webkit-text-size-adjust: 100%;
-            border-radius: 0px
+            border-radius: 4px
         }
 
         .container {
@@ -32,9 +33,9 @@
             margin: 0 auto;
             background-color: var(--surface-color);
             padding: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             box-sizing: border-box;
-            border-radius: 0px
+            border-radius: 4px
         }
 
         h1, h2, h3 { text-align: center; font-weight: 500; }
@@ -49,7 +50,7 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 8px;
-            border-radius: 0px
+            border-radius: 4px
         }
 
         button, .settings select {
@@ -60,7 +61,7 @@
             font-size: 0.8rem;
             cursor: pointer;
             transition: opacity 0.2s;
-            border-radius: 0px;
+            border-radius: 4px;
         }
         
         button:hover { opacity: 0.9; }
@@ -69,12 +70,11 @@
             background-color: var(--primary-color); 
             color: var(--bg-color); 
             font-weight: 900; 
-            /*flex-basis: 100%; */
-            border-radius: 0px
+            border-radius: 4px
         }
-        /* Ayarlar bölümünü 50/50 bölmek için KESİN YÖNTEM */
+        
         .select-group, #startGameBtn {
-            width: calc(50% - 4px); /* Boşluğun yarısını hesaptan düşerek net %50 sağlar */
+            width: calc(50% - 4px);
         }
 
         .select-group {
@@ -83,30 +83,29 @@
         }
 
         .select-group select {
-            width: 100%; /* Kendi grubunun (%50'lik alanın) içini doldurur */
+            width: 100%;
         }
         #addRoundBtn { 
             width: 100%; 
             margin-top: 8px; 
             background-color: var(--input-bg); 
             border-style: dashed;
-            border-radius: 0px
+            border-radius: 4px
         }
         
         #penaltySection { 
             display: flex; 
-            gap: 8px; 
+            gap: 8px;
             justify-content: center; 
             align-items: flex-start;
-            border-radius: 0px
-
+            border-radius: 4px
         }
         .player-penalty-area { 
             flex: 1; 
             padding: 8px; 
             background-color: rgba(0,0,0,0.2); 
             border: 1px solid var(--border-color);
-            border-radius: 0px
+            border-radius: 4px
         }
         .player-penalty-area h3 {
             margin-top: 0;
@@ -119,11 +118,11 @@
             min-height: 24px; 
             margin-bottom: 10px; 
             justify-content: center; 
-            border-radius: 0px
+            border-radius: 4px
         }
         .penalty-tag {
             display: inline-flex; align-items: center; background-color: var(--secondary-color);
-            color: var(--bg-color); padding: 2px 8px; border-radius: 0px;
+            color: var(--bg-color); padding: 2px 8px; border-radius: 4px;
             font-size: 0.9em; font-weight: bold;
         }
         .remove-penalty-tag {
@@ -144,14 +143,12 @@
             width: 100%; 
             border-collapse: collapse; 
             margin-top: 8px; 
-            border-radius: 0px
         }
         th, td { 
             border: 1px solid var(--border-color); 
             padding: 8px 6px; 
             text-align: center; 
             vertical-align: middle;
-            border-radius: 0px
         }
         thead th { 
             background-color: var(--input-bg); 
@@ -167,7 +164,7 @@
         
         input[type="number"] {
             width: 100%; 
-            padding: 10px; 
+            padding: 12px; 
             background-color: var(--input-bg); 
             border: 1px solid var(--border-color);
             color: var(--text-color); 
@@ -175,6 +172,8 @@
             font-size: 1.2rem; 
             box-sizing: border-box;
             -moz-appearance: textfield;
+            border-radius: 4px;
+            font-style:italic;
         }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { 
             -webkit-appearance: none; margin: 0; 
@@ -198,14 +197,12 @@
             font-size: 1.1em;
             color: var(--kafa-active-color); 
         }
-        /* YENİ: Önde olan takım göstergesi için stil */
         .leading-team-indicator {
             font-size: 1em;
             color: var(--passive-text-color);
             margin-left: 10px;
             font-weight: normal;
         }
-        /* YENİ: Göster/Gizle butonu için stiller */
         .total-cell-header {
             display: flex;
             justify-content: space-between;
@@ -220,25 +217,40 @@
         }
 
         .hidden { display: none; }
+
+        /* TABLO KÖŞELERİNİ YUVARLATMA - KESİN ÇÖZÜM */
+        #scoreTable thead th:first-child {
+            border-top-left-radius: 24px;
+        }
+        #scoreTable thead th:last-child {
+            border-top-right-radius: 24px;
+        }
+        #scoreTable tfoot tr:last-child td:first-child {
+            border-bottom-left-radius: 24px;
+        }
+        #scoreTable tfoot tr:last-child td:last-child {
+            border-bottom-right-radius: 24px;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
-    <div class="settings">
-        <div class="select-group">
-            <select id="gameMode">
-                <option value="paired" selected>Eşli</option>
-                <option value="solo">Tek</option>
-            </select>
-            <select id="handCount">
-                <option value="7" selected>7 El</option>
-                <option value="9">9 El</option>
-                <option value="11">11 El</option>
-                <option value="13">13 El</option>
-            </select>
+        <div class="settings">
+            <div class="select-group">
+                <select id="gameMode">
+                    <option value="paired" selected>Eşli</option>
+                    <option value="solo">Tek</option>
+                </select>
+                <select id="handCount">
+                    <option value="7" selected>7 El</option>
+                    <option value="9">9 El</option>
+                    <option value="11">11 El</option>
+                    <option value="13">13 El</option>
+                </select>
+            </div>
+            <button id="startGameBtn">SIFIRLA</button>
         </div>
-        <button id="startGameBtn">SIFIRLA</button>
-    </div>
 
         <div id="penaltyTitle" class="hidden"></div>
         <div id="penaltySection"></div>
@@ -271,7 +283,6 @@
         let playerCount = 2;
         let playerNames = ['A Takımı', 'B Takımı'];
         let currentHandCount = 7;
-        // YENİ: Skorların gizli olup olmadığını tutan değişken
         let areScoresHidden = true; 
 
         function saveGameData() {
@@ -279,7 +290,6 @@
                 settings: { mode: elements.gameModeSelect.value, hands: elements.handCountSelect.value, currentHands: currentHandCount },
                 penalties: [], 
                 scores: {},
-                // YENİ: Arayüz durumu (skorların gizliliği) kaydediliyor
                 ui: { scoresHidden: areScoresHidden }
             };
             for (let i = 0; i < playerCount; i++) {
@@ -301,7 +311,6 @@
             elements.gameModeSelect.value = data.settings.mode;
             elements.handCountSelect.value = data.settings.hands;
             currentHandCount = data.settings.currentHands || parseInt(data.settings.hands);
-            // YENİ: Kayıtlı arayüz durumu yükleniyor
             areScoresHidden = data.ui?.scoresHidden ?? true;
             
             generateTable(false);
@@ -317,11 +326,10 @@
                 if (input) input.value = data.scores[key];
             });
             
-            calculateTotals(); // Bu, en sonda updateTotalScoreDisplay'i çağıracak
+            calculateTotals();
             return true;
         }
 
-        // YENİ: Skorları Göster/Gizle fonksiyonu
         function handleToggleScores() {
             areScoresHidden = !areScoresHidden;
             updateTotalScoreDisplay();
@@ -362,7 +370,7 @@
             if (resetData) {
                 localStorage.removeItem(STORAGE_KEY);
                 currentHandCount = parseInt(elements.handCountSelect.value);
-                areScoresHidden = true; // Sıfırlanınca skorlar gizli başlasın
+                areScoresHidden = true;
             }
             
             const gameMode = elements.gameModeSelect.value;
@@ -374,7 +382,7 @@
             
             elements.penaltySection.innerHTML = '';
             for (let i = 0; i < playerCount; i++) {
-                elements.penaltySection.innerHTML += `<div class="player-penalty-area"><h3>${playerNames[i]}</h3><div class="penalty-tags-container" id="penalty-tags-container-${i}"></div><div class="penalty-total">  <span id="penalty-total-${i}">0</span></div><div class="penalty-input-area"><input type="number" class="new-penalty-input" data-player="${i}" placeholder="Ceza"><button class="add-penalty-btn" data-player="${i}">+</button></div></div>`;
+                elements.penaltySection.innerHTML += `<div class="player-penalty-area"><h3>${playerNames[i]}</h3><div class="penalty-tags-container" id="penalty-tags-container-${i}"></div><div class="penalty-total">  <span id="penalty-total-${i}">0</span></div><div class="penalty-input-area"><input type="number" class="new-penalty-input" data-player="${i}" placeholder="Ceza"><button class="add-penalty-btn" data-player="${i}">+</button></div></div>`;
             }
             
             elements.addRoundContainer.innerHTML = `<button id="addRoundBtn">+ UZATMA EKLE</button>`;
@@ -388,14 +396,12 @@
                 elements.tableBody.innerHTML += createHandRowHTML(i, playerNames);
             }
             
-            // YENİ: Footer (alt toplam) bölümü Göster/Gizle butonuyla birlikte oluşturuluyor
             let footerHTML = `<tr><td><div class="total-cell-header"><button id="toggleScoresBtn" title="Skorları Göster/Gizle"></button></div></td>`;
             for (let j = 0; j < playerCount; j++) { 
                 footerHTML += `<td class="total-score" id="total-${j}" data-real-value="0">0</td>`; 
             }
             footerHTML += '</tr>';
 
-            // YENİ: Fark satırı, önde olan takım göstergesi için span içeriyor
             if (gameMode === 'paired') { 
                 footerHTML += `<tr id="score-difference-row">
                                  <td>FARK</td>
@@ -422,15 +428,13 @@
                 if (penaltyTotalEl) penaltyTotalEl.textContent = penaltySubtotal * 10;
                 total += penaltySubtotal * 10;
                 
-                // YENİ: Gerçek değer data-* attribute'una yazılıyor, görüntüleme ayrı bir fonksiyonda yapılıyor
                 const totalCell = document.getElementById(`total-${i}`);
                 if (totalCell) totalCell.dataset.realValue = total;
             }
-            updateTotalScoreDisplay(); // Görüntüyü güncellemek için bu fonksiyon çağrılıyor
+            updateTotalScoreDisplay();
             saveGameData();
         }
         
-        // YENİ: Alt toplam ve fark görüntüsünü yöneten ana fonksiyon
         function updateTotalScoreDisplay() {
             const toggleBtn = document.getElementById('toggleScoresBtn');
             if (toggleBtn) toggleBtn.textContent = areScoresHidden ? 'TOPLAM' : 'TOPLAM';
@@ -454,12 +458,11 @@
                     diffRow.classList.add('hidden');
                 } else {
                     diffRow.classList.remove('hidden');
-                    updateScoreDifference(); // Skorlar görünür ise farkı hesapla ve göster
+                    updateScoreDifference();
                 }
             }
         }
         
-        // YENİ: Farkı ve önde olan takımı güncelleyen fonksiyon
         function updateScoreDifference() {
             const diffEl = document.getElementById('score-difference-value');
             const leadingTeamEl = document.getElementById('leading-team');
@@ -471,7 +474,6 @@
             diffEl.textContent = Math.abs(score1 - score2);
 
             let leadingTeamName = '';
-            // Düşük puanlı takım öndedir
             if (score1 < score2) {
                 leadingTeamName = `(${playerNames[0]} önde)`;
             } else if (score2 < score1) {
@@ -511,7 +513,6 @@
             if (e.target.matches('.add-penalty-btn, .remove-penalty-tag')) handlePenaltyAction(e);
             if (e.target.matches('#startGameBtn')) generateTable(true);
             if (e.target.matches('#addRoundBtn')) handleAddRound();
-            // YENİ: Göster/Gizle butonunun click olayı
             if (e.target.matches('#toggleScoresBtn')) handleToggleScores();
         }
         
@@ -528,7 +529,3 @@
     </script>
 </body>
 </html>
-
-
-
-
